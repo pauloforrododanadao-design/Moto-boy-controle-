@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -26,11 +27,16 @@ button {
 </head>
 <body>
 <h2>💰 CONTROLE MOTO BOY</h2>
-<input id="valor" type="number" step="0.01" placeholder="Valor da entrega">
+
+<input id="valor" type="text" inputmode="decimal"
+placeholder="Valor da entrega (ex.: 12,30)">
+
 <button onclick="adicionar()">Adicionar entrega</button>
+
 <h3>Última entrega: R$ <span id="ultima">0,00</span></h3>
 <h2>Total do dia: R$ <span id="total">0,00</span></h2>
 <p>Entregas: <span id="qtd">0</span></p>
+
 <script>
 let total = 0;
 let qtd = 0;
@@ -44,8 +50,19 @@ function moeda(n) {
 
 function adicionar() {
   const campo = document.getElementById("valor");
-  const v = Number(campo.value.trim().replace(",", "."));
-  if (!Number.isFinite(v) || v <= 0) return;
+  const texto = campo.value.trim().replace(/\s/g, "");
+  let v;
+
+  if (texto.includes(",")) {
+    v = Number(texto.replace(/\./g, "").replace(",", "."));
+  } else {
+    v = Number(texto);
+  }
+
+  if (!Number.isFinite(v) || v <= 0) {
+    alert("Digite um valor válido, como 12,30");
+    return;
+  }
 
   total += v;
   qtd++;
@@ -53,6 +70,7 @@ function adicionar() {
   document.getElementById("ultima").textContent = moeda(v);
   document.getElementById("total").textContent = moeda(total);
   document.getElementById("qtd").textContent = qtd;
+
   campo.value = "";
 }
 </script>
