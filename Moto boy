@@ -1,0 +1,36 @@
+index.html<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Controle Moto Boy</title>
+<style>
+body { font-family: Arial; background: #111; color: white; text-align: center; padding: 20px; }
+input, button { font-size: 20px; padding: 12px; margin: 8px; border-radius: 8px; }
+button { background: #19c37d; border: 0; }
+</style>
+</head>
+<body>
+<h2>💰 CONTROLE MOTO BOY</h2>
+<input id="valor" type="number" step="0.01" placeholder="Valor da entrega">
+<button onclick="adicionar()">Adicionar entrega</button>
+<h3>Última entrega: R$ <span id="ultima">0,00</span></h3>
+<h2>Total do dia: R$ <span id="total">0,00</span></h2>
+<p>Entregas: <span id="qtd">0</span></p>
+<script>
+let total = 0, qtd = 0;
+function moeda(n) {
+ return n.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function adicionar() {
+ let v = Number(document.getElementById("valor").value);
+ if (!Number.isFinite(v) || v <= 0) return;
+ total += v; qtd++;
+ document.getElementById("ultima").textContent = moeda(v);
+ document.getElementById("total").textContent = moeda(total);
+ document.getElementById("qtd").textContent = qtd;
+ document.getElementById("valor").value = "";
+}
+</script>
+</body>
+</html>
