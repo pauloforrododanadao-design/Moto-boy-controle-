@@ -44,7 +44,7 @@ function moeda(n) {
 
 function adicionar() {
   const campo = document.getElementById("valor");
-  const v = Number(campo.value);
+  const v = Number(campo.value.trim().replace(",", "."));
   if (!Number.isFinite(v) || v <= 0) return;
 
   total += v;
