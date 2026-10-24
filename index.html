@@ -32,7 +32,7 @@ button {
 placeholder="Valor da entrega (ex.: 12,30)">
 
 <button onclick="adicionar()">Adicionar entrega</button>
-<button onclick="zerarSaldo()" style="background:#e53935;color:white;">Zerar saldo do dia</button>
+
 <h3>Última entrega: R$ <span id="ultima">0,00</span></h3>
 <h2>Total do dia: R$ <span id="total">0,00</span></h2>
 <p>Entregas: <span id="qtd">0</span></p>
@@ -135,6 +135,7 @@ async function adicionar() {
     console.error(erro);
   }
 }
+
 async function zerarSaldo() {
   if (!confirm("Tem certeza que deseja zerar o saldo do dia?")) {
     return;
@@ -165,7 +166,7 @@ async function zerarSaldo() {
     }
 
     mostrar(0, 0, 0);
-    alert("Saldo zerado com sucesso!");
+    alert("Saldo do dia zerado com sucesso!");
   } catch (erro) {
     alert("Erro ao zerar o saldo. Tente novamente.");
     console.error(erro);
