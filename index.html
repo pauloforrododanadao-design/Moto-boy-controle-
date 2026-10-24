@@ -37,18 +37,53 @@ placeholder="Valor da entrega (ex.: 12,30)">
 <h2>Total do dia: R$ <span id="total">0,00</span></h2>
 <p>Entregas: <span id="qtd">0</span></p>
 
+
 <script>
+const SUPABASE_URL = "COLE_AQUI_A_URL_DO_SEU_PROJETO";
+const SUPABASE_KEY = "COLE_AQUI_SUA_CHAVE_PUBLISHABLE";
+
 let total = 0;
 let qtd = 0;
 
 function moeda(n) {
-  return n.toLocaleString("pt-BR", {
+  return Number(n).toLocaleString("pt-BR", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
 }
 
-function adicionar() {
+function mostrar(totalAtual, ultimaAtual, qtdAtual) {
+  total = Number(totalAtual);
+  qtd = Number(qtdAtual);
+
+  document.getElementById("ultima").textContent = moeda(ultimaAtual);
+  document.getElementById("total").textContent = moeda(total);
+  document.getElementById("qtd").textContent = qtd;
+}
+
+async function carregar() {
+  const resposta = await fetch(
+    `${SUPABASE_URL}/rest/v1/saldo_dia?id=eq.1&select=*`,
+    {
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`
+      }
+    }
+  );
+
+  if (!resposta.ok) {
+    throw new Error("Não foi possível carregar o saldo.");
+  }
+
+  const dados = await resposta.json();
+
+  if (dados.length > 0) {
+    mostrar(dados[0].total, dados[0].ultima, dados[0].quantidade);
+  }
+}
+
+async function adicionar() {
   const campo = document.getElementById("valor");
   const texto = campo.value.trim().replace(/\s/g, "");
   let v;
@@ -64,15 +99,47 @@ function adicionar() {
     return;
   }
 
-  total += v;
-  qtd++;
+  try {
+    await carregar();
 
-  document.getElementById("ultima").textContent = moeda(v);
-  document.getElementById("total").textContent = moeda(total);
-  document.getElementById("qtd").textContent = qtd;
+    const novoTotal = total + v;
+    const novaQtd = qtd + 1;
 
-  campo.value = "";
+    const resposta = await fetch(
+      `${SUPABASE_URL}/rest/v1/saldo_dia?id=eq.1`,
+      {
+        method: "PATCH",
+        headers: {
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${SUPABASE_KEY}`,
+          "Content-Type": "application/json",
+          Prefer: "return=representation"
+        },
+        body: JSON.stringify({
+          total: novoTotal,
+          ultima: v,
+          quantidade: novaQtd,
+          atualizado_em: new Date().toISOString()
+        })
+      }
+    );
+
+    if (!resposta.ok) {
+      throw new Error("Não foi possível salvar a entrega.");
+    }
+
+    mostrar(novoTotal, v, novaQtd);
+    campo.value = "";
+  } catch (erro) {
+    alert("Erro ao salvar. Confira a URL, a chave e a conexão.");
+    console.error(erro);
+  }
 }
+
+carregar().catch(erro => {
+  console.error(erro);
+  alert("Não foi possível conectar ao saldo online.");
+});
 </script>
 </body>
 </html>
