@@ -135,7 +135,42 @@ async function adicionar() {
     console.error(erro);
   }
 }
+async function zerarSaldo() {
+  if (!confirm("Tem certeza que deseja zerar o saldo do dia?")) {
+    return;
+  }
 
+  try {
+    const resposta = await fetch(
+      `${SUPABASE_URL}/rest/v1/saldo_dia?id=eq.1`,
+      {
+        method: "PATCH",
+        headers: {
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${SUPABASE_KEY}`,
+          "Content-Type": "application/json",
+          Prefer: "return=minimal"
+        },
+        body: JSON.stringify({
+          total: 0,
+          ultima: 0,
+          quantidade: 0,
+          atualizado_em: new Date().toISOString()
+        })
+      }
+    );
+
+    if (!resposta.ok) {
+      throw new Error("Não foi possível zerar o saldo.");
+    }
+
+    mostrar(0, 0, 0);
+    alert("Saldo zerado com sucesso!");
+  } catch (erro) {
+    alert("Erro ao zerar o saldo. Tente novamente.");
+    console.error(erro);
+  }
+}
 carregar().catch(erro => {
   console.error(erro);
   alert("Não foi possível conectar ao saldo online.");
